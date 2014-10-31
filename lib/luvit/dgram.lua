@@ -72,6 +72,7 @@ function Socket:initialize(family, listener)
   self._receiving = false
   self._bound = false
   self._family = family
+  self._host = nil
 
   self:_initEmitters()
 
@@ -121,6 +122,14 @@ function Socket:send(msg, port, address, callback)
   self:_healthCheck()
   self:_startReceiving()
 
+  local function send()
+    self._handle:send(msg, port, self._host, callback)
+  end
+
+  if self._host then
+    return send()
+  end
+
   self._handle.lookup(address, function(err, ip)
     if err then
       if callback then callback(err) end
@@ -128,7 +137,8 @@ function Socket:send(msg, port, address, callback)
       return
     end
 
-    self._handle:send(msg, port, address, callback)
+    self._host = ip
+    send()
   end)
 end
 
