@@ -344,7 +344,6 @@ net.createConnection = function(port, ... --[[ host, cb --]])
   local host
   local options
   local callback
-  local s
 
   -- future proof
   if type(port) == 'table' then
@@ -357,8 +356,12 @@ net.createConnection = function(port, ... --[[ host, cb --]])
     callback = args[2]
   end
 
-  s = Socket:new()
-  return s:connect(port, host, callback)
+  local sock = Socket:new()
+  sock:connect(port, host, function(err)
+    if err then sock:emit('error', err); return end
+    if callback then callback(sock) end
+  end)
+  return sock
 end
 
 net.create = net.createConnection
