@@ -54,6 +54,7 @@ local function spawn(command, args, options)
   end)
 
   em.kill = function(self, signal)
+    if not uv.is_active(self.handle) then return end
     uv.process_kill(self.handle, signal or 'SIGTERM')
   end
 
