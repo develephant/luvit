@@ -5,7 +5,7 @@ local environmentTestResult = false
 
 require('tap')(function(test)
   test('environment subprocess', function(expect)
-    local child, options, onStdout, onExit
+    local child, options, onStdout, onExit, onEnd
 
     options = {
       env = { TEST1 = 1 }
@@ -25,6 +25,10 @@ require('tap')(function(test)
       assert(code == 0)
     end
 
+    function onEnd()
+    end
+
+    child.stdout:on('end', expect(onEnd))
     child.stdout:on('data', expect(onStdout))
     child:on('exit', expect(onExit))
   end)
