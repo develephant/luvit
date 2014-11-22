@@ -358,7 +358,11 @@ net.createConnection = function(port, ... --[[ host, cb --]])
 
   local sock = Socket:new()
   sock:connect(port, host, function(err)
-    if err then sock:emit('error', err); return end
+    if err then
+      sock:emit('error', err)
+      sock:destroy()
+      return 
+    end
     if callback then callback(sock) end
   end)
   return sock
