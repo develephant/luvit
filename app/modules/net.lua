@@ -340,10 +340,7 @@ net.Server = Server
 net.Socket = Socket
 
 net.createConnection = function(port, ... --[[ host, cb --]])
-  local args = {...}
-  local host
-  local options
-  local callback
+  local args = {...}, host, options, callback, onConnect, sock
 
   -- future proof
   if type(port) == 'table' then
@@ -356,15 +353,18 @@ net.createConnection = function(port, ... --[[ host, cb --]])
     callback = args[2]
   end
 
-  local sock = Socket:new()
-  sock:connect(port, host, function(err)
+  sock = Socket:new()
+
+  function onConnect(err)
     if err then
       sock:emit('error', err)
       sock:destroy()
       return 
     end
     if callback then callback(sock) end
-  end)
+  end
+
+  sock:connect(port, host, onConnect)
   return sock
 end
 
