@@ -21,8 +21,9 @@ local timer = require('timer')
 local uv = require('uv')
 
 local function spawn(command, args, options)
-  local envPairs = {}, env, em, onCallback
+  local envPairs, em, onCallback, kill
 
+  envPairs = {}
   args = args or {}
   options = options or {}
   options.detached = options.detached or false
@@ -51,6 +52,10 @@ local function spawn(command, args, options)
     end)
     em:emit('exit', code, signal)
   end)
+
+  em.kill = function(signal)
+    uv.process_kill(em.handle, signal or 'SIGTERM')
+  end
 
   em.stdin:readStart()
   em.stdout:readStart()
