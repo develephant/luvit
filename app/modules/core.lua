@@ -387,7 +387,11 @@ end
 function Stream:readStart()
   uv.read_start(self.handle, function(err, chunk)
     if err then return self:emit('error', err) end
-    if chunk then self:emit('data', chunk) end
+    if chunk then
+      self:emit('data', chunk)
+    else
+      self:emit('end')
+    end
   end)
 end
 
