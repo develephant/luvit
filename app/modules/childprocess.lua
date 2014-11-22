@@ -53,8 +53,8 @@ local function spawn(command, args, options)
     em:emit('exit', code, signal)
   end)
 
-  em.kill = function(signal)
-    uv.process_kill(em.handle, signal or 'SIGTERM')
+  em.kill = function(self, signal)
+    uv.process_kill(self.handle, signal or 'SIGTERM')
   end
 
   em.stdin:readStart()
